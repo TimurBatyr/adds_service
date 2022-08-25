@@ -46,8 +46,7 @@ class UserProfile(AbstractUser):
 
     def __str__(self):
         return self.email
-    def has_module_perms(self, app_label):
-        return self.is_staff
-    def has_perm(self, obj):
-        return self.is_superuser
+
+
+
 

@@ -3,7 +3,7 @@ from django.utils.crypto import get_random_string
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from .utils import send_new_password
+from .utils import send_new_password, get_activation_code, send_activation_mail
 
 User = get_user_model()
 
@@ -32,8 +32,11 @@ class RegistrationSerializer(serializers.ModelSerializer):
     def save(self):
         data = self.validated_data
         user = User.objects.create_user(**data)
-        user.set_activation_code()
-        user.send_activation_mail()
+        activation_code = get_activation_code()
+        user.activation_code = activation_code
+        user.save(update_fields=['activation_code'])
+        send_activation_mail(activation_code, user.email)
+
 
 class ActivationSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
