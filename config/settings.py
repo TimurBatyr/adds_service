@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
+import datetime
 import os
 from pathlib import Path
 
@@ -41,6 +42,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'rest_framework_simplejwt',
+    'rest_framework.authtoken',
     # apps
     'account',
     'adds',
@@ -84,7 +86,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'db_zmall',
+        'NAME': 'zmall_db',
         'USER': 'admin',
         'PASSWORD': 'admin',
         'HOST': 'localhost',
@@ -142,5 +144,17 @@ REST_FRAMEWORK = {
     ),
 }
 
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=10),
+    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=1),
+}
+
 
 AUTH_USER_MODEL = 'account.UserProfile'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'testovzmall@gmail.com'
+EMAIL_HOST_PASSWORD = 'sxvxfdmyvseydupx'

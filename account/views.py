@@ -1,13 +1,12 @@
 from rest_framework import status, generics
 from rest_framework.authtoken.models import Token
-from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .serializers import RegistrationSerializer, ActivationSerializer, ForgotPasswordSerializer, \
-    ChangePasswordSerializer, LoginSerializer
+    ChangePasswordSerializer
 
 
 class RegistrationAPIView(generics.GenericAPIView):
@@ -20,7 +19,7 @@ class RegistrationAPIView(generics.GenericAPIView):
         return Response('Successfully registered. Check your email to confirm', status=status.HTTP_201_CREATED)
 
 
-class ActivateView(APIView):
+class ActivateView(generics.GenericAPIView):
 
     serializer_class = ActivationSerializer
     def post(self, request):
@@ -30,28 +29,6 @@ class ActivateView(APIView):
         return Response('Your account successfully activated!', status=status.HTTP_200_OK)
 
 
-# class LoginView(ObtainAuthToken):
-#     serializer_class = LoginSerializer
-
-class LoginView(TokenObtainPairView):
-    serializer_class = LoginSerializer
-
-class LogoutView(APIView):
-    permission_classes = [IsAuthenticated, ]
-
-    def post(self, request):
-        user = request.user
-        Token.objects.filter(user=user).delete()
-        return Response('Successfully logged out', status=status.HTTP_200_OK)
-
-class ForgotPasswordView(APIView):
-    def post(self, request):
-        data = request.data
-        serializer = ForgotPasswordSerializer(data=data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.create_new_password()
-            return Response('New password has been sent to your email')
-
 class ChangePasswordView(APIView):
     permission_classes = [IsAuthenticated]
     def post(self, request):
@@ -60,3 +37,12 @@ class ChangePasswordView(APIView):
         if serializer.is_valid(raise_exception=True):
             serializer.set_new_password()
             return Response('You have successfully updated your password')
+
+
+class ForgotPasswordView(APIView):
+    def post(self, request):
+        data = request.data
+        serializer = ForgotPasswordSerializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        serializer.create_new_password(serializer.data['email'])
+        return Response('New password has been sent to your email')
