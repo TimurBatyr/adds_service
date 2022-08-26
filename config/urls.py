@@ -15,10 +15,19 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 
+from adds.views import  PostAddViewSet
+
+router = DefaultRouter()
+# router.register('adds/detailpost', DetailPostViewSet) #URL для товара +id
+router.register('adds/addpost', PostAddViewSet, 'Add') #URL для товара +id
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/account/', include('account.urls')),
+    path('api/v1/adds/', include('adds.urls')),
+    path('api/v1/', include(router.urls)),
+
 
 ]
